@@ -10,21 +10,52 @@
 
 </template>
 
+<template name="insertRoundsForm">
+  {{#autoForm collection="Runden" id="insertRoundForm" type="insert"}}
+    <fieldset>
+      <legend>Runde hinzufügen</legend>
+      {{> afQuickField name='theName'}}
+    </fieldset>
+    <button type="submit" class="btn btn-primary">Hinzufügen</button>
+  {{/autoForm}}
+<br>
+  {{#each rounds}}
+    <div>{{theName}} <button class="btn btn-danger delete">X</button>  <button class="btn edit" key={{_id}}>Ändern</button>
+<button class="btn matches {{#if hasTargets}}btn-success{{ else }}btn-warning{{/if}}" key={{_id}}>{{#if hasTargets}} ❤_❤ ✓{{ else }} *_* {{/if}}</button>     
+    </div> 
+<br>
+  {{/each}}
+</template>
+
+<template name="updateRoundsForm">
+  {{#autoForm collection="Runden" doc=this id="updateRoundForm" type="update"}}
+    <fieldset>
+      <legend>Runde {{ theName }} updaten</legend>
+      {{> afQuickField name='theName'}}
+    </fieldset>
+    <button type="submit" class="btn btn-primary">Speichern</button>
+     <button class="back btn">Zurück</button>
+  {{/autoForm}}
+</template>
+
 <template name="insertPersonForm">
   {{#autoForm collection="People" id="insertPersonForm" type="insert"}}
     <fieldset>
       <legend>Person hinzufügen</legend>
       {{> afQuickField name='theName'}}
+      {{> afQuickField name='telefonnummer'}}
     </fieldset>
     <button type="submit" class="btn btn-primary">Hinzufügen</button>
   {{/autoForm}}
 <br>
   {{#each people}}
     <div>{{theName}} <button class="btn btn-danger delete">X</button>  <button class="btn edit" key={{_id}}>Ändern</button>
-<button class="btn matches btn-success" key={{_id}}> ❤_❤ </button>     {{#if hasTargets}}ok{{/if}}
+<button class="btn matches {{#if hasTargets}}btn-success{{ else }}btn-warning{{/if}}" key={{_id}}>{{#if hasTargets}} ❤_❤ ✓{{ else }} *_* {{/if}}</button>     
     </div> 
 <br>
   {{/each}}
+
+  wenn alle matches drinn sind, dann hier einen druckknopf anzeigen + meldung das alles ok ist.
 </template>
 
 <template name="updatePersonForm">
@@ -32,8 +63,9 @@
 	 <fieldset>
       <legend>Person {{ theName }} updaten</legend>
       {{> afQuickField name='theName'}}
+      {{> afQuickField name='telefonnummer'}}
     </fieldset>
-      <button type="submit" class="btn btn-primary">Ändern</button>
+      <button type="submit" class="btn btn-primary">Infos Ändern</button>
 
   		<button class="back btn">Zurück</button>
 
@@ -49,6 +81,14 @@
     <button type="submit" class="btn btn-primary">Speichern</button>
     <button class="back btn">Zurück</button>
   {{/autoForm}}
+
+	<ul class="matches">
+	  {{#each showMatches}}
+	  <li>❤_❤ MATCH {{person.theName}} {{person.telefonnummer}} ❤_❤</li>
+	  {{/each}}
+  </ul>
+
+  druckknopf? (druckstylesheet)
 <br>
 
 </template>

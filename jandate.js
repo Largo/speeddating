@@ -1,9 +1,24 @@
+// Todo: don't use autopublish etc. & insecure
+
 People = new Mongo.Collection("people");
 
 People.attachSchema(new SimpleSchema({
   theName: {
     type: String,
     label: "Name",
+    max: 255
+  },
+/*  email: {
+    type: String,
+    optional: true,
+    regEx: SimpleSchema.RegEx.Email,
+    label: "E-Mail Adresse",
+    max: 255
+  }, */
+  telefonnummer: {
+    type: String,
+    //optional: true,
+    label: "Telefonnummer (alternativ andere Kontaktangabe)",
     max: 255
   },
       targetIds: {
@@ -50,47 +65,16 @@ People.attachSchema(new SimpleSchema({
   } */
 }));
 
-Matches = new Mongo.Collection("matches");
+  Runden = new Mongo.Collection("runden");
 
-  Matches.attachSchema(new SimpleSchema({
-   /* theName: {
+  Runden.attachSchema(new SimpleSchema({
+    theName: {
       type: String,
       label: "Name",
       max: 255
-    },
-    sourceId {
-      type: String,
-      label: "SourceD"
-    } */
-
-
-    
-    targetIds: {
-      type: [String],
-      autoform: {
-        type: "selectize",
-        afFieldInput: {
-          multiple: true,
-          selectizeOptions: function() { 
-            return [
-          {label: "2013", value: 2013},
-          {label: "2014", value: 2014},
-          {label: "2015", value: 2015}
-        ];
-          /*  return People.find({}, {fields: {'theName' : 1}, 
-                transform: function(doc) {
-                o = {};
-                o.value = doc._id;
-                o.label = doc.theName;
-                return o;
-                }
-                }).fetch(); */
-          }
-        }
-      }
     }
-
   }));
+
 
 
    /*  Router.route('/', function () {
@@ -99,8 +83,18 @@ Matches = new Mongo.Collection("matches");
     }); */
 
 //Router.route('/', {name: 'insertPersonForm'});
+  Router.route('/', {name: 'insertRoundsForm'});
 
-  Router.route('/', {name: 'insertPersonForm'});
+  Router.route('/runden/edit/:_id', function() {
+    var rounds = Runden.findOne({_id: this.params._id});
+    this.render('updateRoundsForm', {data: rounds});
+  }, {name: 'updateRoundsForm'});
+
+
+  Router.route('/person/:roundId', function() {
+    var personen = People.find({roundId: this.params.roundId});
+    this.render('insertPersonForm', {data: { personen: personen } } );
+  }, {name: 'insertPersonForm'});
 
   Router.route('/personen/edit/:_id', function() {
     var person = People.findOne({_id: this.params._id});
@@ -114,14 +108,38 @@ Matches = new Mongo.Collection("matches");
 
 
 if (Meteor.isClient) {
-   
+ Template.insertRoundsForm.helpers({
+   rounds: function() {
+    return Runden.find();
+   }
+/*   deletePerson: function(id) {
+      People.remove(id);
+   } */
+ });
+
+ Template.insertRoundsForm.events({
+  "click .delete": function() {
+    Runden.remove(this._id);
+  },
+  "click .edit": function(e) {
+    Router.go('updateRoundsForm', {_id: this._id})
+  },
+ });
+
+ Template.updateRoundsForm.events({
+  "click .back": function() {
+    Router.go('insertRoundsForm');
+  }
+ });
+
  Template.insertPersonForm.helpers({
    people: function() {
-    return People.find();
-   },
+    return this.personen;
+    //return People.find();
+   }, 
    hasTargets: function() {
-    targetIds = People.findOne( { _id: this._id }, {fields: {'targetIds' : 1}}).targetIds;
-    return targetIds.length ? targetIds.length > 0 : false;
+    var targetIds = People.findOne( { _id: this._id }, {fields: {'targetIds' : 1}}).targetIds;
+    return  targetIds && targetIds.length ? targetIds.length > 0 : false;
    }
 /*   deletePerson: function(id) {
       People.remove(id);
@@ -156,6 +174,28 @@ if (Meteor.isClient) {
                 return o;
                 }
                 }).fetch();
+    },
+    showMatches: function() {
+        var targetIds = People.findOne( { _id: this._id }, {fields: {'targetIds' : 1}}).targetIds;
+        var sourceId = this._id;
+
+         var matches = [];
+         targetIds.forEach(function(targetId) {
+            var peopleTheTargetLikes = People.findOne( { _id: targetId }, {fields: {'targetIds' : 1}}).targetIds;
+            peopleTheTargetLikes = peopleTheTargetLikes && peopleTheTargetLikes.length > 0 ? peopleTheTargetLikes : [];
+
+            if (peopleTheTargetLikes.indexOf(sourceId) > -1) { // if not then heartbreak... :(
+              matches.push({matchId: targetId, person: People.findOne( { _id: targetId }, {})});
+            }
+         });
+
+         console.log(matches);
+
+         return matches;
+    },
+    getPersonForId: function(id) {
+      return People.findOne( { _id: id }, {});
+
     }
  });
 

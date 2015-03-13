@@ -21,7 +21,7 @@
 <br>
   {{#each rounds}}
     <div>{{theName}} <button class="btn btn-danger delete">X</button>  <button class="btn edit" key={{_id}}>Ändern</button>
-<button class="btn matches {{#if hasTargets}}btn-success{{ else }}btn-warning{{/if}}" key={{_id}}>{{#if hasTargets}} ❤_❤ ✓{{ else }} *_* {{/if}}</button>     
+<button class="btn people {{#if hasPeople}}btn-success{{ else }}btn-warning{{/if}}" key={{_id}}>Teilnehmer eintragen</button>     
     </div> 
 <br>
   {{/each}}
@@ -40,17 +40,21 @@
 
 <template name="insertPersonForm">
   {{#autoForm collection="People" id="insertPersonForm" type="insert"}}
+  <h2>{{ round.theName }}</h2>
     <fieldset>
       <legend>Person hinzufügen</legend>
       {{> afQuickField name='theName'}}
       {{> afQuickField name='telefonnummer'}}
+	  {{> afFieldInput name='roundId' value=roundId type="hidden"}}
     </fieldset>
     <button type="submit" class="btn btn-primary">Hinzufügen</button>
+      <button class="back btn">Zurück</button>  
+
   {{/autoForm}}
 <br>
   {{#each people}}
     <div>{{theName}} <button class="btn btn-danger delete">X</button>  <button class="btn edit" key={{_id}}>Ändern</button>
-<button class="btn matches {{#if hasTargets}}btn-success{{ else }}btn-warning{{/if}}" key={{_id}}>{{#if hasTargets}} ❤_❤ ✓{{ else }} *_* {{/if}}</button>     
+<button class="btn matches {{#if hasTargets}}btn-success{{ else }}btn-warning{{/if}}" key={{_id}}>{{#if hasTargets}} ❤_❤ ✓{{ else }} *_* {{/if}}</button>  
     </div> 
 <br>
   {{/each}}

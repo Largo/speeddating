@@ -21,6 +21,11 @@ People.attachSchema(new SimpleSchema({
     label: "Telefonnummer (alternativ andere Kontaktangabe)",
     max: 255
   },
+  roundId: {
+    type: String,
+    max: 255
+  },
+
       targetIds: {
       type: [String],
       optional: true,
@@ -93,12 +98,12 @@ People.attachSchema(new SimpleSchema({
 
   Router.route('/person/:roundId', function() {
     var personen = People.find({roundId: this.params.roundId});
-    this.render('insertPersonForm', {data: { personen: personen } } );
+    this.render('insertPersonForm', {data: { personen: personen, roundId: this.params.roundId, round: Runden.findOne({_id: this.params.roundId}) }} );
   }, {name: 'insertPersonForm'});
 
   Router.route('/personen/edit/:_id', function() {
     var person = People.findOne({_id: this.params._id});
-    this.render('updatePersonForm', {data: person});
+    this.render('updatePersonForm', {data: person });
   }, {name: 'updatePersonForm'});
 
   Router.route('/matches/:_id', function() {
@@ -122,14 +127,23 @@ if (Meteor.isClient) {
     Runden.remove(this._id);
   },
   "click .edit": function(e) {
-    Router.go('updateRoundsForm', {_id: this._id})
+    Router.go('updateRoundsForm', {_id: this._id});
   },
+  "click .people": function(e) {
+    Router.go('insertPersonForm', {roundId: this._id});
+  }
  });
 
  Template.updateRoundsForm.events({
   "click .back": function() {
     Router.go('insertRoundsForm');
   }
+ });
+
+ Template.insertRoundsForm.helpers({
+   hasPeople: function() {
+    return (People.find({roundId: this._id}).count() > 0);
+   }
  });
 
  Template.insertPersonForm.helpers({
@@ -151,22 +165,25 @@ if (Meteor.isClient) {
     People.remove(this._id);
   },
   "click .edit": function(e) {
-    Router.go('updatePersonForm', {_id: this._id})
+    Router.go('updatePersonForm', {_id: this._id })
   },
   "click .matches": function() {
     Router.go('insertMatchesForm', {_id: this._id})
-  }
+  },
+  "click .back": function() {
+    Router.go('insertRoundsForm', {});
+  } 
  });
 
  Template.updatePersonForm.events({
   "click .back": function() {
-    Router.go('insertPersonForm');
+    Router.go('insertPersonForm', { roundId: this.roundId });
   } 
  });
 
  Template.insertMatchesForm.helpers({
     optionsHelper: function() {
-          return People.find( { _id: { $ne: this._id } }, {fields: {'theName' : 1}, 
+          return People.find( { _id: { $ne: this._id }, roundId: this.roundId }, {fields: {'theName' : 1}, 
                 transform: function(doc) {
                 o = {};
                 o.value = doc._id;
@@ -201,7 +218,7 @@ if (Meteor.isClient) {
 
   Template.insertMatchesForm.events({
   "click .back": function() {
-    Router.go('insertPersonForm');
+    Router.go('insertPersonForm', {roundId: this.roundId });
   } 
  });
 

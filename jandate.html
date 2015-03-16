@@ -1,13 +1,13 @@
 <head>
-  <title>jandate</title>
+  <title>❤_❤ JAN Liebesgenerator ❤_❤</title>
 </head>
 <body>
+	{{> loginButtons}}
 
-{{> atForm}}
   <h1>❤_❤ JAN Liebesgenerator ❤_❤</h1>
 </body>
-<template name="insertBookForm">
-
+<template name="splash">
+	{{> atForm}}
 </template>
 
 <template name="insertRoundsForm">
@@ -45,6 +45,7 @@
       <legend>Person hinzufügen</legend>
       {{> afQuickField name='theName'}}
       {{> afQuickField name='telefonnummer'}}
+      {{> afQuickField name='geschlecht'}}
 	  {{> afFieldInput name='roundId' value=roundId type="hidden"}}
     </fieldset>
     <button type="submit" class="btn btn-primary">Hinzufügen</button>
@@ -68,6 +69,7 @@
       <legend>Person {{ theName }} updaten</legend>
       {{> afQuickField name='theName'}}
       {{> afQuickField name='telefonnummer'}}
+      {{> afQuickField name='geschlecht'}}
     </fieldset>
       <button type="submit" class="btn btn-primary">Infos Ändern</button>
 

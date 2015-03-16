@@ -8,121 +8,108 @@ People.attachSchema(new SimpleSchema({
     label: "Name",
     max: 255
   },
-/*  email: {
-    type: String,
-    optional: true,
-    regEx: SimpleSchema.RegEx.Email,
-    label: "E-Mail Adresse",
-    max: 255
-  }, */
   telefonnummer: {
     type: String,
-    //optional: true,
     label: "Telefonnummer (alternativ andere Kontaktangabe)",
     max: 255
+  },
+  geschlecht: {
+    type: String,
+    autoform: {
+      type: "select-radio-inline",
+      options: function () {
+        return [
+          {label: "Männlich", value: 'm'},
+          {label: "Weiblich", value: 'f'},
+          ];
+      }
+    }
   },
   roundId: {
     type: String,
     max: 255
   },
-
-      targetIds: {
-      type: [String],
-      optional: true,
-      autoform: {
-        type: "selectize",
-        afFieldInput: {
-          multiple: true,
-          selectizeOptions: function() { 
-            return [
-        ];
-          /*  return People.find({}, {fields: {'theName' : 1}, 
-                transform: function(doc) {
-                o = {};
-                o.value = doc._id;
-                o.label = doc.theName;
-                return o;
-                }
-                }).fetch(); */
-          }
+  targetIds: {
+    type: [String],
+    optional: true,
+    autoform: {
+      type: "selectize",
+      afFieldInput: {
+        multiple: true,
+        selectizeOptions: function() { 
+          return [];
         }
       }
     }
-/*)   author: {
-    type: String,
-    label: "Author"
-  },
-  copies: {
-    type: Number,
-    label: "Number of copies",
-    min: 0
-  },
-  lastCheckedOut: {
-    type: Date,
-    label: "Last date this book was checked out",
-    optional: true
-  },
-  summary: {
-    type: String,
-    label: "Brief summary",
-    optional: true,
-    max: 1000
-  } */
+  }
 }));
 
-  Runden = new Mongo.Collection("runden");
+Runden = new Mongo.Collection("runden");
 
-  Runden.attachSchema(new SimpleSchema({
-    theName: {
-      type: String,
-      label: "Name",
-      max: 255
-    }
-  }));
+Runden.attachSchema(new SimpleSchema({
+  theName: {
+    type: String,
+    label: "Name",
+    max: 255
+  }
+}));
+
+var mustBeSignedIn = function() {
+  if (!(Meteor.user() || Meteor.loggingIn())) {
+    Router.go('splash');
+  } else {
+    this.next();
+  }
+};
+
+var goToDashboard = function() {
+  if (Meteor.user() || Meteor.loggingIn()) {
+    Router.go('insertRoundsForm');
+  } else {
+    this.next();
+  }
+};
+
+Router.onBeforeAction(mustBeSignedIn, {except: ['splash']});
+Router.onBeforeAction(goToDashboard, {only: ['splash']});
+
+Router.route('/', {name: 'splash'});
+
+Router.route('/insertRounds', {name: 'insertRoundsForm'});
+
+Router.route('/runden/edit/:_id', function() {
+  var rounds = Runden.findOne({_id: this.params._id});
+  this.render('updateRoundsForm', {data: rounds});
+}, {name: 'updateRoundsForm'});
 
 
+Router.route('/person/:roundId', function() {
+  var personen = People.find({roundId: this.params.roundId});
+  this.render('insertPersonForm', {data: { personen: personen, roundId: this.params.roundId, round: Runden.findOne({_id: this.params.roundId}) }} );
+}, {name: 'insertPersonForm'});
 
-   /*  Router.route('/', function () {
-    this.render('Home', {
-      data: function () {  }
-    }); */
+Router.route('/personen/edit/:_id', function() {
+  var person = People.findOne({_id: this.params._id});
+  this.render('updatePersonForm', {data: person });
+}, {name: 'updatePersonForm'});
 
-//Router.route('/', {name: 'insertPersonForm'});
-  Router.route('/', {name: 'insertRoundsForm'});
-
-  Router.route('/runden/edit/:_id', function() {
-    var rounds = Runden.findOne({_id: this.params._id});
-    this.render('updateRoundsForm', {data: rounds});
-  }, {name: 'updateRoundsForm'});
-
-
-  Router.route('/person/:roundId', function() {
-    var personen = People.find({roundId: this.params.roundId});
-    this.render('insertPersonForm', {data: { personen: personen, roundId: this.params.roundId, round: Runden.findOne({_id: this.params.roundId}) }} );
-  }, {name: 'insertPersonForm'});
-
-  Router.route('/personen/edit/:_id', function() {
-    var person = People.findOne({_id: this.params._id});
-    this.render('updatePersonForm', {data: person });
-  }, {name: 'updatePersonForm'});
-
-  Router.route('/matches/:_id', function() {
-    var person = People.findOne({_id: this.params._id});
-      this.render('insertMatchesForm', {data: person});
-  },{name: 'insertMatchesForm'});
+Router.route('/matches/:_id', function() {
+  var person = People.findOne({_id: this.params._id});
+    this.render('insertMatchesForm', {data: person});
+},{name: 'insertMatchesForm'});
 
 
 if (Meteor.isClient) {
- Template.insertRoundsForm.helpers({
-   rounds: function() {
-    return Runden.find();
-   }
-/*   deletePerson: function(id) {
-      People.remove(id);
-   } */
- });
+  Meteor.subscribe("people"); // Meteor needs to subscribe these
+  Meteor.subscribe("runden"); // BE CAREFUL case sensitive!
 
- Template.insertRoundsForm.events({
+  Template.insertRoundsForm.helpers({
+     rounds: function() {
+      return Runden.find();
+     }
+  });
+
+  Template.insertRoundsForm.events({
   "click .delete": function() {
     Runden.remove(this._id);
   },
@@ -132,21 +119,21 @@ if (Meteor.isClient) {
   "click .people": function(e) {
     Router.go('insertPersonForm', {roundId: this._id});
   }
- });
+  });
 
- Template.updateRoundsForm.events({
+  Template.updateRoundsForm.events({
   "click .back": function() {
     Router.go('insertRoundsForm');
   }
- });
+  });
 
- Template.insertRoundsForm.helpers({
+  Template.insertRoundsForm.helpers({
    hasPeople: function() {
     return (People.find({roundId: this._id}).count() > 0);
    }
- });
+  });
 
- Template.insertPersonForm.helpers({
+  Template.insertPersonForm.helpers({
    people: function() {
     return this.personen;
     //return People.find();
@@ -155,12 +142,12 @@ if (Meteor.isClient) {
     var targetIds = People.findOne( { _id: this._id }, {fields: {'targetIds' : 1}}).targetIds;
     return  targetIds && targetIds.length ? targetIds.length > 0 : false;
    }
-/*   deletePerson: function(id) {
+  /*   deletePerson: function(id) {
       People.remove(id);
    } */
- });
+  });
 
- Template.insertPersonForm.events({
+  Template.insertPersonForm.events({
   "click .delete": function() {
     People.remove(this._id);
   },
@@ -173,17 +160,17 @@ if (Meteor.isClient) {
   "click .back": function() {
     Router.go('insertRoundsForm', {});
   } 
- });
+  });
 
- Template.updatePersonForm.events({
+  Template.updatePersonForm.events({
   "click .back": function() {
     Router.go('insertPersonForm', { roundId: this.roundId });
   } 
- });
+  });
 
- Template.insertMatchesForm.helpers({
+  Template.insertMatchesForm.helpers({
     optionsHelper: function() {
-          return People.find( { _id: { $ne: this._id }, roundId: this.roundId }, {fields: {'theName' : 1}, 
+          return People.find( { _id: { $ne: this._id }, roundId: this.roundId, geschlecht : { $ne: this.geschlecht } }, {fields: {'theName' : 1}, 
                 transform: function(doc) {
                 o = {};
                 o.value = doc._id;
@@ -214,31 +201,69 @@ if (Meteor.isClient) {
       return People.findOne( { _id: id }, {});
 
     }
- });
-
-  Template.insertMatchesForm.events({
-  "click .back": function() {
-    Router.go('insertPersonForm', {roundId: this.roundId });
-  } 
- });
-
- /* Template.hello.helpers({
-    counter: function () {
-      return Session.get('counter');
-    }
   });
 
-  Template.hello.events({
-    'click button': function () {
-      // increment the counter when button is clicked
-      Session.set('counter', Session.get('counter') + 1);
-    }
-  }); */
+  Template.insertMatchesForm.events({
+    "click .back": function() {
+      Router.go('insertPersonForm', {roundId: this.roundId });
+    } 
+  });
+
 }
 
 if (Meteor.isServer) {
   Meteor.startup(function () {
+    // Safety code...
 
+    // Only return people that where created by the logged iin user
+    Meteor.publish("people", function () {
+      return People.find({submittedById: this.userId}, {});
+    });
+
+     Meteor.publish("runden", function () {
+     // return Runden.find({submittedById: this.userId}, {});
+     return Runden.find({submittedById: this.userId});
+    });
+
+    // Add the current user to the document when it's inserted
+    // this is from the collection-hooks package
+    People.before.insert(function (userId, doc) {
+      doc.submittedById = userId;
+    });
+
+    Runden.before.insert(function (userId, doc) {
+      doc.submittedById = userId;
+    });
+
+    People.allow({
+      insert: function(userId, doc) {
+        // only allow posting if you are logged in
+        return !! userId; 
+      },
+      update: function(userId, doc) {
+        // only allow updating if you are logged in and the user who created the item
+        return !! (userId && (doc.submittedById === userId));
+      },
+      remove: function(userId, doc) {
+        //only allow deleting if you are owner
+        return doc.submittedById === userId;
+      }
+    });
+
+    Runden.allow({
+      insert: function(userId, doc) {
+        // only allow posting if you are logged in
+        return !! userId; 
+      },
+      update: function(userId, doc) {
+        // only allow updating if you are logged in and the user who created the item
+        return !! (userId && (doc.submittedById === userId));
+      },
+      remove: function(userId, doc) {
+        //only allow deleting if you are owner
+        return doc.submittedById === userId;
+      }
+    });
 
     // code to run on server at startup
   });

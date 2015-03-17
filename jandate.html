@@ -57,10 +57,17 @@
     <div>{{theName}} <button class="btn btn-danger delete">X</button>  <button class="btn edit" key={{_id}}>Ändern</button>
 <button class="btn matches {{#if hasTargets}}btn-success{{ else }}btn-warning{{/if}}" key={{_id}}>{{#if hasTargets}} ❤_❤ ✓{{ else }} *_* {{/if}}</button>  
     </div> 
-<br>
+	<br>
   {{/each}}
+  <br>
 
-  wenn alle matches drinn sind, dann hier einen druckknopf anzeigen + meldung das alles ok ist.
+  {{#if allPeopleHaveTargets round._id }}
+	<p class="alert alert-success">Bei allen Personen wurde mindestens ein Target hinterlegt.</p>
+  {{ else}}
+   <p class="alert alert-danger">Achtung. es wurden noch nicht bei allen Personen Targets hinterlegt</p>
+  {{/if}}
+  <button class="btn btn-primary {{#if allPeopleHaveTargets round._id }}btn-success{{ else }}btn-danger{{/if}} printMatches">Matches ausdrucken</button>
+
 </template>
 
 <template name="updatePersonForm">
@@ -97,4 +104,18 @@
   druckknopf? (druckstylesheet)
 <br>
 
+</template>
+
+<template name="printMatches">
+ <h2>Target Blätter für Runde {{ round.theName }}</h2>
+ <button class="btn btn-primary showPrintDialog">Drucken</button>
+ {{#each people}}
+ 	<h1 class="matcherName">❤_❤ Deine OtakuDate Matches {{theName}}! ❤_❤</h1>
+	<ul class="matches">
+	  {{#each showMatches}}
+	  <li>❤_❤ MATCH {{person.theName}} {{person.telefonnummer}} ❤_❤</li>
+	  {{/each}}
+	</ul>
+	<!-- <footer>OtakuDate</footer> -->
+  {{/each}}
 </template>

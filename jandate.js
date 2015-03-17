@@ -98,6 +98,11 @@ Router.route('/matches/:_id', function() {
     this.render('insertMatchesForm', {data: person});
 },{name: 'insertMatchesForm'});
 
+Router.route('/printMatches/:roundId', function() {
+  var people = People.find({roundId: this.params.roundId});
+  this.render('printMatches', {data: { people: people, roundId: this.params.roundId, round: Runden.findOne({_id: this.params.roundId}) }} );
+}, {name: 'printMatches'});
+
 
 if (Meteor.isClient) {
   Meteor.subscribe("people"); // Meteor needs to subscribe these
@@ -141,6 +146,19 @@ if (Meteor.isClient) {
    hasTargets: function() {
     var targetIds = People.findOne( { _id: this._id }, {fields: {'targetIds' : 1}}).targetIds;
     return  targetIds && targetIds.length ? targetIds.length > 0 : false;
+   },
+   allPeopleHaveTargets: function(roundId) {
+        var people = People.find( {roundId: roundId}, {fields: {'targetIds' : 1}});
+        var noTarget = false; // set this to true, when we find a person without targets in this round
+
+        people.forEach(function(person) {
+          var targetIds = person.targetIds;
+          if (! (targetIds && targetIds.length)) {
+            noTarget = true;
+          }
+        });
+
+        return !noTarget; // if there is no target then all people have targets.
    }
   /*   deletePerson: function(id) {
       People.remove(id);
@@ -159,7 +177,10 @@ if (Meteor.isClient) {
   },
   "click .back": function() {
     Router.go('insertRoundsForm', {});
-  } 
+  },
+  "click .printMatches" : function() {
+    Router.go('printMatches', {roundId: this.roundId});
+  }
   });
 
   Template.updatePersonForm.events({
@@ -168,18 +189,7 @@ if (Meteor.isClient) {
   } 
   });
 
-  Template.insertMatchesForm.helpers({
-    optionsHelper: function() {
-          return People.find( { _id: { $ne: this._id }, roundId: this.roundId, geschlecht : { $ne: this.geschlecht } }, {fields: {'theName' : 1}, 
-                transform: function(doc) {
-                o = {};
-                o.value = doc._id;
-                o.label = doc.theName;
-                return o;
-                }
-                }).fetch();
-    },
-    showMatches: function() {
+  var showMatches =  function() {
         var targetIds = People.findOne( { _id: this._id }, {fields: {'targetIds' : 1}}).targetIds;
         var sourceId = this._id;
 
@@ -196,7 +206,20 @@ if (Meteor.isClient) {
          console.log(matches);
 
          return matches;
+    }
+
+  Template.insertMatchesForm.helpers({
+    optionsHelper: function() {
+          return People.find( { _id: { $ne: this._id }, roundId: this.roundId, geschlecht : { $ne: this.geschlecht } }, {fields: {'theName' : 1}, 
+                transform: function(doc) {
+                o = {};
+                o.value = doc._id;
+                o.label = doc.theName;
+                return o;
+                }
+                }).fetch();
     },
+    showMatches: showMatches,
     getPersonForId: function(id) {
       return People.findOne( { _id: id }, {});
 
@@ -207,6 +230,16 @@ if (Meteor.isClient) {
     "click .back": function() {
       Router.go('insertPersonForm', {roundId: this.roundId });
     } 
+  });
+
+  Template.printMatches.helpers({
+       showMatches: showMatches
+  });
+
+  Template.printMatches.events({
+    "click .showPrintDialog" : function() {
+      window.print();
+    }
   });
 
 }

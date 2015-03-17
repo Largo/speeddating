@@ -66,6 +66,7 @@ mrt:moment@2.6.0
 msavin:mongol@0.6.5
 npm-bcrypt@0.7.7
 observe-sequence@1.0.4
+ongoworks:pdf@1.1.1
 ordered-dict@1.0.2
 raix:eventemitter@0.1.1
 raix:onetimeout@1.0.3

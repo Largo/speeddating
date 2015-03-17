@@ -2,3 +2,19 @@
 body {
 	padding: 30px;
 }
+
+@media print {
+    /*footer {page-break-after: always;} */
+	
+	.matcherName {
+		page-break-before: always;
+	}
+
+    .login-link-text {
+    	display: none;
+    }
+
+    .showPrintDialog {
+    	display: none;
+    }
+}

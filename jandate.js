@@ -203,8 +203,6 @@ if (Meteor.isClient) {
             }
          });
 
-         console.log(matches);
-
          return matches;
     }
 
@@ -239,7 +237,10 @@ if (Meteor.isClient) {
   Template.printMatches.events({
     "click .showPrintDialog" : function() {
       window.print();
-    }
+    },
+    "click .back": function() {
+      Router.go('insertPersonForm', {roundId: this.roundId });
+    } 
   });
 
 }

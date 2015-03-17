@@ -109,7 +109,9 @@
 <template name="printMatches">
  <h2>Target Blätter für Runde {{ round.theName }}</h2>
  <button class="btn btn-primary showPrintDialog">Drucken</button>
- {{#each people}}
+ <button class="btn back">Zurück</button>
+
+  {{#each people}}
  	<h1 class="matcherName">❤_❤ Deine OtakuDate Matches {{theName}}! ❤_❤</h1>
 	<ul class="matches">
 	  {{#each showMatches}}

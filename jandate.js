@@ -1,6 +1,7 @@
 // Todo: don't use autopublish etc. & insecure
 
-People = new Mongo.Collection("people");
+//People = new Mongo.Collection("people");
+People = new Ground.Collection('people');
 
 People.attachSchema(new SimpleSchema({
   theName: {
@@ -44,7 +45,9 @@ People.attachSchema(new SimpleSchema({
   }
 }));
 
-Runden = new Mongo.Collection("runden");
+//Runden = new Mongo.Collection("runden");
+Runden = new Ground.Collection('runden');
+
 
 Runden.attachSchema(new SimpleSchema({
   theName: {
@@ -143,6 +146,9 @@ if (Meteor.isClient) {
     return this.personen;
     //return People.find();
    }, 
+   areThereEnoughPeople: function() {
+    return (this.personen.count() > 1);
+   },
    hasTargets: function() {
     var targetIds = People.findOne( { _id: this._id }, {fields: {'targetIds' : 1}}).targetIds;
     return  targetIds && targetIds.length ? targetIds.length > 0 : false;

@@ -1,4 +1,6 @@
 <head>
+  <meta charset="utf-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>❤_❤ JAN Liebesgenerator ❤_❤</title>
 </head>
 <body>
@@ -20,7 +22,7 @@
   {{/autoForm}}
 <br>
   {{#each rounds}}
-    <div>{{theName}} <button class="btn btn-danger delete">X</button>  <button class="btn edit" key={{_id}}>Ändern</button>
+    <div>{{theName}} <button class="btn btn-danger delete">X</button>  <button class="btn edit btn-default" key={{_id}}>Ändern</button>
 <button class="btn people {{#if hasPeople}}btn-success{{ else }}btn-warning{{/if}}" key={{_id}}>Teilnehmer eintragen</button>     
     </div> 
 <br>
@@ -34,7 +36,7 @@
       {{> afQuickField name='theName'}}
     </fieldset>
     <button type="submit" class="btn btn-primary">Speichern</button>
-     <button class="back btn">Zurück</button>
+     <button class="back btn btn-default">Zurück</button>
   {{/autoForm}}
 </template>
 
@@ -49,24 +51,26 @@
 	  {{> afFieldInput name='roundId' value=roundId type="hidden"}}
     </fieldset>
     <button type="submit" class="btn btn-primary">Hinzufügen</button>
-      <button class="back btn">Zurück</button>  
+      <button class="back btn btn-default">Zurück</button>  
 
   {{/autoForm}}
 <br>
   {{#each people}}
-    <div>{{theName}} <button class="btn btn-danger delete">X</button>  <button class="btn edit" key={{_id}}>Ändern</button>
+    <div>{{theName}} <button class="btn btn-danger delete">X</button>  <button class="btn edit btn-default" key={{_id}}>Ändern</button>
 <button class="btn matches {{#if hasTargets}}btn-success{{ else }}btn-warning{{/if}}" key={{_id}}>{{#if hasTargets}} ❤_❤ ✓{{ else }} *_* {{/if}}</button>  
     </div> 
 	<br>
   {{/each}}
   <br>
 
-  {{#if allPeopleHaveTargets round._id }}
-	<p class="alert alert-success">Bei allen Personen wurde mindestens ein Target hinterlegt.</p>
-  {{ else}}
-   <p class="alert alert-danger">Achtung. es wurden noch nicht bei allen Personen Targets hinterlegt</p>
-  {{/if}}
+  {{#if areThereEnoughPeople }}
+	  {{#if allPeopleHaveTargets round._id }}
+		<p class="alert alert-success">Bei allen Personen wurde mindestens ein Target hinterlegt.</p>
+	  {{ else}}
+	   <p class="alert alert-danger">Achtung. es wurden noch nicht bei allen Personen Targets hinterlegt</p>
+	  {{/if}}
   <button class="btn btn-primary {{#if allPeopleHaveTargets round._id }}btn-success{{ else }}btn-danger{{/if}} printMatches">Matches ausdrucken</button>
+  {{/if}}
 
 </template>
 
@@ -80,7 +84,7 @@
     </fieldset>
       <button type="submit" class="btn btn-primary">Infos Ändern</button>
 
-  		<button class="back btn">Zurück</button>
+  		<button class="back btn btn-default">Zurück</button>
 
   {{/autoForm}}
 </template>
@@ -92,16 +96,14 @@
       {{> afFieldInput name="targetIds" type="selectize" options=optionsHelper }} 
     </fieldset>    
     <button type="submit" class="btn btn-primary">Speichern</button>
-    <button class="back btn">Zurück</button>
-  {{/autoForm}}
-
+    <button class="back btn btn-default">Zurück</button>
+  {{/autoForm}} 
+	<br>
 	<ul class="matches">
 	  {{#each showMatches}}
 	  <li>❤_❤ MATCH {{person.theName}} {{person.telefonnummer}} ❤_❤</li>
 	  {{/each}}
   </ul>
-
-  druckknopf? (druckstylesheet)
 <br>
 
 </template>
@@ -109,7 +111,7 @@
 <template name="printMatches">
  <h2>Target Blätter für Runde {{ round.theName }}</h2>
  <button class="btn btn-primary showPrintDialog">Drucken</button>
- <button class="btn back">Zurück</button>
+ <button class="btn back btn-default">Zurück</button>
 
   {{#each people}}
  	<h1 class="matcherName">❤_❤ Deine OtakuDate Matches {{theName}}! ❤_❤</h1>

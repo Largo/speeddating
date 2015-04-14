@@ -249,6 +249,20 @@ if (Meteor.isClient) {
     } 
   });
 
+
+  // Code for returning automatically when user pressed save
+  AutoForm.addHooks(['updatePersonForm', 'insertMatchesForm'], {
+      onSuccess: function(formType, result) {
+        console.log(this);
+        console.log(result);
+        Router.go('insertPersonForm', {roundId: this.template.data.doc.roundId });
+      }
+  });
+
+  UI.registerHelper('equals', function (a, b) {
+   return a === b;
+  });
+
 }
 
 if (Meteor.isServer) {

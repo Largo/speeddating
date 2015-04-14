@@ -1,12 +1,12 @@
 <head>
   <meta charset="utf-8"> 
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>❤_❤ JAN Liebesgenerator ❤_❤</title>
+  <title>❤_❤ JAN Otaku Date ❤_❤</title>
 </head>
 <body>
 	{{> loginButtons}}
 
-  <h1>❤_❤ JAN Liebesgenerator ❤_❤</h1>
+  <h1>❤_❤ JAN Otaku Date ❤_❤</h1>
 </body>
 <template name="splash">
 	{{> atForm}}
@@ -54,13 +54,17 @@
       <button class="back btn btn-default">Zurück</button>  
 
   {{/autoForm}}
-<br>
+<br> 
+<table class="table table-bordered">
+<tbody>
   {{#each people}}
-    <div>{{theName}} <button class="btn btn-danger delete">X</button>  <button class="btn edit btn-default" key={{_id}}>Ändern</button>
+    <tr class="{{#if equals geschlecht 'm' }}info{{ else }}danger{{/if}}"><td>{{theName}}</td> <td><button class="btn btn-danger delete">X</button> <button class="btn edit btn-default" key={{_id}}>Ändern</button> 
 <button class="btn matches {{#if hasTargets}}btn-success{{ else }}btn-warning{{/if}}" key={{_id}}>{{#if hasTargets}} ❤_❤ ✓{{ else }} *_* {{/if}}</button>  
-    </div> 
-	<br>
+</td>
+    </tr> 
   {{/each}}
+  </tbody>
+ </table>
   <br>
 
   {{#if areThereEnoughPeople }}

@@ -5,6 +5,7 @@
 </head>
 <body>
 	{{> loginButtons}}
+  {{> autoformModals}}
 
   <h1>❤_❤ JAN Otaku Date ❤_❤</h1>
 </body>
@@ -22,7 +23,7 @@
   {{/autoForm}}
 <br>
   {{#each rounds}}
-    <div>{{theName}} <button class="btn btn-danger delete">X</button>  <button class="btn edit btn-default" key={{_id}}>Ändern</button>
+    <div>{{theName}} {{#afModal class="btn btn-danger" collection="Runden" prompt="Bisch wükli sicher, dass willsch lösche?" title="Löschen" buttonContent="Ja, wükli lösche" operation="remove" doc=_id}}  X {{/afModal}} <button class="btn edit btn-default" key={{_id}}>Ändern</button>
 <button class="btn people {{#if hasPeople}}btn-success{{ else }}btn-warning{{/if}}" key={{_id}}>Teilnehmer eintragen</button>     
     </div> 
 <br>
@@ -58,7 +59,9 @@
 <table class="table table-bordered">
 <tbody>
   {{#each people}}
-    <tr class="{{#if equals geschlecht 'm' }}info{{ else }}danger{{/if}}"><td>{{theName}}</td> <td><button class="btn btn-danger delete">X</button> <button class="btn edit btn-default" key={{_id}}>Ändern</button> 
+    <tr class="{{#if equals geschlecht 'm' }}info{{ else }}danger{{/if}}"><td>{{theName}}</td> <td>
+{{#afModal class="btn btn-danger" collection="People" prompt="Bisch wükli sicher, dass willsch lösche?" title="Löschen" buttonContent="Ja, wükli lösche" operation="remove" doc=_id}}  X {{/afModal}}
+    <button class="btn edit btn-default" key={{_id}}>Ändern</button> 
 <button class="btn matches {{#if hasTargets}}btn-success{{ else }}btn-warning{{/if}}" key={{_id}}>{{#if hasTargets}} ❤_❤ ✓{{ else }} *_* {{/if}}</button>  
 </td>
     </tr> 
@@ -121,9 +124,11 @@
  	<h1 class="matcherName">❤_❤ Deine OtakuDate Matches {{theName}}! ❤_❤</h1>
 	<ul class="matches">
 	  {{#each showMatches}}
-	  <li>❤_❤ MATCH {{person.theName}} {{person.telefonnummer}} ❤_❤</li>
-	  {{/each}}
+	  <li>❤_❤ MATCH {{person.theName}} - {{person.telefonnummer}} ❤_❤</li>
+	  {{else}}
+      Dieses Mal leider keine Matches :(
+    {{/each}}
 	</ul>
-	<!-- <footer>OtakuDate</footer> -->
   {{/each}}
+  <!--<footer>Largo and OtakuDate Team</footer>-->
 </template>

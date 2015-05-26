@@ -121,14 +121,16 @@
  <button class="btn back btn-default">Zurück</button>
 
   {{#each people}}
- 	<h1 class="matcherName">❤_❤ Deine OtakuDate Matches {{theName}}! ❤_❤</h1>
-	<ul class="matches">
-	  {{#each showMatches}}
-	  <li>❤_❤ MATCH {{person.theName}} - {{person.telefonnummer}} ❤_❤</li>
-	  {{else}}
-      Dieses Mal leider keine Matches :(
-    {{/each}}
-	</ul>
+  <div class="matchPerson">
+   	<h1 class="matcherName">Deine OtakuDate Matches {{theName}}! ❤_❤</h1>
+  	<ul class="matches">
+  	  {{#each showMatches}}
+  	  <li>❤_❤ MATCH {{person.theName}} - {{person.telefonnummer}} ❤_❤</li>
+  	  {{else}}
+        Dieses Mal leider keine Matches :(
+      {{/each}}
+  	</ul>
+  </div>
   {{/each}}
   <!--<footer>Largo and OtakuDate Team</footer>-->
 </template>

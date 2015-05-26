@@ -7,14 +7,20 @@ body {
     /*footer {page-break-after: always;} */
 	
 	.matcherName {
-		page-break-before: always;
+		/* page-break-before: always; */
+
 	}
+
+    .matchPerson {
+        page-break-inside: avoid;
+        margin-bottom: 30px;
+    }
 
     .login-link-text {
     	display: none;
     }
 
-    .showPrintDialog {
+    .showPrintDialog, .back {
     	display: none;
     }
 }
